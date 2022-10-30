@@ -10,6 +10,7 @@
 #include <Wire.h>
 #include <WiFiNINA.h>
 #include "rgb_lcd.h"
+#include <TimeLib.h>     
 
 rgb_lcd lcd;
 
@@ -79,17 +80,15 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-  while (client.available()) {
-    // read an incoming byte from the server and print them to serial monitor:
+  if (client.available()) {
     char c = client.read();
     Serial.print(c);
   }
-  
+
   if (!client.connected()) {
-    // if the server's disconnected, stop the client:
     client.stop();
   }
-
+  
   currentTime = millis();
   // Every second, calculate and print litres/hour
   if(currentTime >= (cloopTime + 1000)) {
@@ -103,12 +102,13 @@ void loop() {
       l_minute = l_minute/60;
       lcd.setCursor(0,1);
       vol = vol +l_minute;
+      makePostRequest("/record", "{\"rate\":" + String(l_minute) + ",\"vol\":" + String(vol) + ",\"timestamp\":" + String(now()) + "}");
       lcd.print("Vol: " + String(vol) + " L");
       flow_frequency = 0; // Reset Counter
       Serial.print(l_minute, DEC); // Print litres/hour
       Serial.println(" L/Sec");
-      makePostRequest(client, "{\"rate\":" + String(l_minute) + ",\"vol\":" + String(vol) + "}", "/record");
    } else {
+      makePostRequest("/record", "{\"rate\": 0,\"vol\":" + String(vol) + ",\"timestamp\":" + String(now()) + "}");
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Rate: " + String(flow_frequency) + " L/M");
