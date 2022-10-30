@@ -10,6 +10,7 @@
 #include <Wire.h>
 #include <WiFiNINA.h>
 #include "rgb_lcd.h"
+#include <TimeLib.h>     
 
 rgb_lcd lcd;
 
@@ -104,6 +105,8 @@ void loop() {
       makePostRequest("/record", "{\"rate\":" + String(l_minute) + ",\"vol\":" + String(vol) + ",\"timestamp\":" + String(now()) + "}");
       lcd.print("Vol: " + String(vol) + " L");
       flow_frequency = 0; // Reset Counter
+      Serial.print(l_minute, DEC); // Print litres/hour
+      Serial.println(" L/Sec");
    } else {
       makePostRequest("/record", "{\"rate\": 0,\"vol\":" + String(vol) + ",\"timestamp\":" + String(now()) + "}");
       lcd.clear();

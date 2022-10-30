@@ -8,7 +8,7 @@ void makeGetRequest(String path) {
     client.println("Connection: close");
     client.println(); // end HTTP request header
   } else {
-    Serial.println("conenction to pete failed");
+    Serial.println("connection to pete failed");
   }
 }
 
@@ -23,13 +23,11 @@ void makePostRequest(String path, String body) {
     client.println("Content-Type: application/json");
     client.println("Accept: */*");
     client.println("Cache-Control: no-cache");
-    client.println("Accept-Encoding: gzip, deflate");
-    client.println("Accept-Language: en-us");
     client.println("Content-Length: " + String(body.length()));
     client.println("Connection: close");
     client.println(); // end HTTP request header
     client.println(body);
   } else {
-    Serial.println("conenction to pete failed");
+    Serial.println("connection to pete failed");
   } 
 }
