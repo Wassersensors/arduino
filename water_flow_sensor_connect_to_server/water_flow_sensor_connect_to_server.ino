@@ -28,8 +28,8 @@ unsigned long cloopTime;
 char ssid[] = "";    //  your network SSID (name)
 char pass[] = "";   // your network password
 
-char SERVER_ADDRESS[] = ""; // hostname of web server
-const int PORT = 80; // port of the server
+char SERVER_ADDRESS[] = "wassersensors-backend.fly.dev"; // hostname of web server
+const int PORT = 443; // port of the server
 
 int status = WL_IDLE_STATUS;
 
@@ -71,9 +71,11 @@ void setup() {
     while(true);
   }
   lcd.clear();
-  lcd.print("Connected!");
+  lcd.print("Measuring flow");
   Serial.println("Connected to wifi");
 
+  makeConnection();
+  
   currentTime = millis();
   cloopTime = currentTime;
 }
@@ -96,19 +98,17 @@ void loop() {
     if(flow_frequency != 0){
       // Pulse frequency (Hz) = 7.5Q, Q is flow rate in L/min.
       l_minute = (flow_frequency / 7.5); // (Pulse frequency x 60 min) / 7.5Q = flowrate in L/hour
+      l_minute = l_minute/60;
+      makePostRequest("/record", "{\"rate\":" + String(l_minute) + ",\"total_volume\":" + String(vol) + "}");
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Rate: " + String(l_minute) + " L/M");
-      l_minute = l_minute/60;
       lcd.setCursor(0,1);
       vol = vol +l_minute;
-      makePostRequest("/record", "{\"rate\":" + String(l_minute) + ",\"vol\":" + String(vol) + ",\"timestamp\":" + String(now()) + "}");
       lcd.print("Vol: " + String(vol) + " L");
       flow_frequency = 0; // Reset Counter
-      Serial.print(l_minute, DEC); // Print litres/hour
-      Serial.println(" L/Sec");
    } else {
-      makePostRequest("/record", "{\"rate\": 0,\"vol\":" + String(vol) + ",\"timestamp\":" + String(now()) + "}");
+      makePostRequest("/record", "{\"rate\": 0,\"total_volume\":" + String(vol) + "}");
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Rate: " + String(flow_frequency) + " L/M");
