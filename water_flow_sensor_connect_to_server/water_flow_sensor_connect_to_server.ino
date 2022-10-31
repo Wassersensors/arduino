@@ -99,7 +99,7 @@ void loop() {
       // Pulse frequency (Hz) = 7.5Q, Q is flow rate in L/min.
       l_minute = (flow_frequency / 7.5); // (Pulse frequency x 60 min) / 7.5Q = flowrate in L/hour
       l_minute = l_minute/60;
-      makePostRequest("/record", "{\"rate\":" + String(l_minute) + ",\"vol\":" + String(vol) + "}");
+      makePostRequest("/record", "{\"rate\":" + String(l_minute) + ",\"total_volume\":" + String(vol) + "}");
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Rate: " + String(l_minute) + " L/M");
@@ -108,7 +108,7 @@ void loop() {
       lcd.print("Vol: " + String(vol) + " L");
       flow_frequency = 0; // Reset Counter
    } else {
-      makePostRequest("/record", "{\"rate\": 0,\"vol\":" + String(vol) + "}");
+      makePostRequest("/record", "{\"rate\": 0,\"total_volume\":" + String(vol) + "}");
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Rate: " + String(flow_frequency) + " L/M");
